@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.venv/
+outputs/
+test-results/
+*.pt
+*.ply
+*.glb
+*.blend
+.env
+Library/
+Temp/
+Logs/

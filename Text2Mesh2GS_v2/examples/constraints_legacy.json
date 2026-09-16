@@ -1,0 +1,123 @@
+{
+
+  "scene_id": "room_001",
+  "constraints": [
+    {
+      "type": "vertical",
+      "relation": "on",
+      "source": "vase_01",
+      "target": "table_01"
+    },
+    {
+      "type": "distance",
+      "relation": "near",
+      "source": "chair_01",
+      "target": "table_01"
+    },
+    {
+      "type": "rotation",
+      "relation": "face to",
+      "source": "chair_01",
+      "target": "table_01"
+    },
+    {
+      "type": "distance",
+      "relation": "near",
+      "source": "sofa_01",
+      "target": "table_01"
+    },
+    {
+      "type": "rotation",
+      "relation": "face to",
+      "source": "sofa_01",
+      "target": "table_01"
+    },
+    {
+      "type": "relative",
+      "relation": "against",
+      "source": "bookshelf_01",
+      "target": "wall_back_01"
+    },
+    {
+      "type": "relative",
+      "relation": "left of",
+      "source": "bookshelf_01",
+      "target": "window_frame_01"
+    },
+    {
+      "type": "distance",
+      "relation": "near",
+      "source": "plant_01",
+      "target": "window_frame_01"
+    },
+    {
+      "type": "relative",
+      "relation": "right of",
+      "source": "plant_01",
+      "target": "window_frame_01"
+    },
+    {
+      "type": "relative",
+      "relation": "behind",
+      "source": "outside_view_01",
+      "target": "window_frame_01"
+    },
+    {
+      "type": "relative",
+      "relation": "in front of",
+      "source": "chair_01",
+      "target": "table_01"
+    },
+    {
+      "type": "relative",
+      "relation": "behind",
+      "source": "sofa_01",
+      "target": "table_01"
+    },
+    {
+      "type": "relative",
+      "relation": "right of",
+      "source": "sofa_01",
+      "target": "table_01"
+    },
+    {
+      "type": "background",
+      "relation": "behind",
+      "source": "outside_view_01",
+      "target": "window_frame_01"
+    },
+    {
+      "type": "alignment",
+      "relation": "center aligned with",
+      "source": "outside_view_01",
+      "target": "window_frame_01"
+    },
+    {
+      "type": "alignment",
+      "relation": "parallel to",
+      "source": "outside_view_01",
+      "target": "wall_back_01"
+    },
+    {
+      "type": "visibility",
+      "relation": "cover",
+      "source": "outside_view_01",
+      "target": "window_frame_01"
+    },
+    {
+      "type": "visibility",
+      "relation": "visible through",
+      "source": "outside_view_01",
+      "target": "window_frame_01"
+    },
+    {
+      "type": "layout",
+      "relation": "center of room",
+      "source": "table_01",
+      "target": "room_01",
+      "weight": 1.0,
+      "note": "Place the coffee table near the central seating area. This is evaluated by distance from roomCenterXZ in SemanticConstraintScenePlacer."
+    }
+  ]
+
+}

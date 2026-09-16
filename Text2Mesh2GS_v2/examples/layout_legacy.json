@@ -1,0 +1,438 @@
+{
+  "scene_id": "room_001",
+  "scene_name": "nordic_living_room",
+  "room": {
+    "size": [
+      6.0,
+      4.0,
+      6.0
+    ],
+    "coordinate_system": "Unity-like: x=right, y=up, z=forward/depth"
+  },
+  "coordinate_system": "Unity-like: x=right, y=up, z=forward/depth",
+  "hybrid_enabled": false,
+  "unity_objects": [
+    {
+      "id": "floor_01",
+      "name": "light wooden floor",
+      "category": "floor",
+      "representation": "mesh",
+      "interaction_required": false,
+      "background_only": false,
+      "transform": {
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rotation_euler": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          6.0,
+          1.0,
+          6.0
+        ]
+      },
+      "asset": {
+        "unity_type": "procedural_mesh",
+        "asset_path": null,
+        "primitive_category": "floor"
+      }
+    },
+    {
+      "id": "ceiling_01",
+      "name": "white ceiling",
+      "category": "ceiling",
+      "representation": "mesh",
+      "interaction_required": false,
+      "background_only": false,
+      "transform": {
+        "position": [
+          0.0,
+          4.0,
+          0.0
+        ],
+        "rotation_euler": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          6.0,
+          1.0,
+          6.0
+        ]
+      },
+      "asset": {
+        "unity_type": "procedural_mesh",
+        "asset_path": null,
+        "primitive_category": "ceiling"
+      }
+    },
+    {
+      "id": "wall_back_01",
+      "name": "back white wall",
+      "category": "wall",
+      "representation": "mesh",
+      "interaction_required": false,
+      "background_only": false,
+      "transform": {
+        "position": [
+          0.0,
+          2.0,
+          2.5
+        ],
+        "rotation_euler": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          6.0,
+          4.0,
+          1.0
+        ]
+      },
+      "asset": {
+        "unity_type": "procedural_mesh",
+        "asset_path": null,
+        "primitive_category": "wall"
+      }
+    },
+    {
+      "id": "wall_left_01",
+      "name": "left white wall",
+      "category": "wall",
+      "representation": "mesh",
+      "interaction_required": false,
+      "background_only": false,
+      "transform": {
+        "position": [
+          0.0,
+          2.0,
+          0.0
+        ],
+        "rotation_euler": [
+          0.0,
+          90.0,
+          0.0
+        ],
+        "scale": [
+          6.0,
+          4.0,
+          1.0
+        ]
+      },
+      "asset": {
+        "unity_type": "procedural_mesh",
+        "asset_path": null,
+        "primitive_category": "wall"
+      }
+    },
+    {
+      "id": "wall_right_01",
+      "name": "right white wall",
+      "category": "wall",
+      "representation": "mesh",
+      "interaction_required": false,
+      "background_only": false,
+      "transform": {
+        "position": [
+          0.0,
+          2.0,
+          0.0
+        ],
+        "rotation_euler": [
+          0.0,
+          90.0,
+          0.0
+        ],
+        "scale": [
+          6.0,
+          4.0,
+          1.0
+        ]
+      },
+      "asset": {
+        "unity_type": "procedural_mesh",
+        "asset_path": null,
+        "primitive_category": "wall"
+      }
+    },
+    {
+      "id": "window_frame_01",
+      "name": "large back window frame",
+      "category": "window_frame",
+      "representation": "mesh",
+      "interaction_required": false,
+      "background_only": false,
+      "transform": {
+        "position": [
+          0.0,
+          2.0,
+          2.95
+        ],
+        "rotation_euler": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          3.2,
+          2.2,
+          0.1
+        ]
+      },
+      "asset": {
+        "unity_type": "procedural_mesh",
+        "asset_path": null,
+        "primitive_category": "window_frame"
+      }
+    },
+    {
+      "id": "sofa_01",
+      "name": "light gray sofa",
+      "category": "sofa",
+      "representation": "mesh",
+      "interaction_required": true,
+      "background_only": false,
+      "transform": {
+        "position": [
+          1.2,
+          0.0,
+          1.35
+        ],
+        "rotation_euler": [
+          0.0,
+          -128.3675,
+          0.0
+        ],
+        "scale": [
+          1.7,
+          1.0,
+          1.0
+        ]
+      },
+      "asset": {
+        "unity_type": "mesh_gameobject",
+        "asset_path": "outputs/mesh_assets/room_001/sofa_01/sofa_01.glb",
+        "prefab_name": "sofa_01"
+      }
+    },
+    {
+      "id": "rug_01",
+      "name": "light gray rug",
+      "category": "rug",
+      "representation": "mesh",
+      "interaction_required": false,
+      "background_only": false,
+      "transform": {
+        "position": [
+          0.2,
+          0.02,
+          0.5
+        ],
+        "rotation_euler": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          2.5,
+          1.0,
+          2.0
+        ]
+      },
+      "asset": {
+        "unity_type": "procedural_mesh",
+        "asset_path": null,
+        "primitive_category": "rug"
+      }
+    },
+    {
+      "id": "chair_01",
+      "name": "wooden chair",
+      "category": "chair",
+      "representation": "mesh",
+      "interaction_required": true,
+      "background_only": false,
+      "transform": {
+        "position": [
+          -1.35,
+          0.0,
+          0.25
+        ],
+        "rotation_euler": [
+          0.0,
+          83.6598,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "asset": {
+        "unity_type": "mesh_gameobject",
+        "asset_path": "outputs/mesh_assets/room_001/chair_01/chair_01.glb",
+        "prefab_name": "chair_01"
+      }
+    },
+    {
+      "id": "table_01",
+      "name": "round wooden coffee table",
+      "category": "table",
+      "representation": "mesh",
+      "interaction_required": true,
+      "background_only": false,
+      "transform": {
+        "position": [
+          0.0,
+          0.0,
+          0.4
+        ],
+        "rotation_euler": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.2,
+          1.0,
+          1.2
+        ]
+      },
+      "asset": {
+        "unity_type": "mesh_gameobject",
+        "asset_path": "outputs/mesh_assets/room_001/table_01/table_01.glb",
+        "prefab_name": "table_01"
+      }
+    },
+    {
+      "id": "bookshelf_01",
+      "name": "wooden bookshelf",
+      "category": "bookshelf",
+      "representation": "mesh",
+      "interaction_required": true,
+      "background_only": false,
+      "transform": {
+        "position": [
+          -2.3,
+          0.0,
+          2.7
+        ],
+        "rotation_euler": [
+          0.0,
+          180.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.4,
+          0.7
+        ]
+      },
+      "asset": {
+        "unity_type": "mesh_gameobject",
+        "asset_path": "outputs/mesh_assets/room_001/bookshelf_01/bookshelf_01.glb",
+        "prefab_name": "bookshelf_01"
+      }
+    },
+    {
+      "id": "vase_01",
+      "name": "white ceramic vase",
+      "category": "vase",
+      "representation": "mesh",
+      "interaction_required": true,
+      "background_only": false,
+      "transform": {
+        "position": [
+          0.0,
+          0.45,
+          0.4
+        ],
+        "rotation_euler": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          0.35,
+          0.35,
+          0.35
+        ]
+      },
+      "asset": {
+        "unity_type": "mesh_gameobject",
+        "asset_path": "outputs/mesh_assets/room_001/vase_01/vase_01.glb",
+        "prefab_name": "vase_01"
+      }
+    },
+    {
+      "id": "plant_01",
+      "name": "large potted plant",
+      "category": "plant",
+      "representation": "mesh",
+      "interaction_required": true,
+      "background_only": false,
+      "transform": {
+        "position": [
+          2.2,
+          0.0,
+          2.0
+        ],
+        "rotation_euler": [
+          0.0,
+          -30.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "asset": {
+        "unity_type": "mesh_gameobject",
+        "asset_path": "outputs/mesh_assets/room_001/plant_01/plant_01.glb",
+        "prefab_name": "plant_01"
+      }
+    },
+    {
+      "id": "outside_view_01",
+      "name": "outside view with street trees and buildings",
+      "category": "outside_view",
+      "representation": "gaussian",
+      "interaction_required": false,
+      "background_only": true,
+      "transform": {
+        "position": [
+          0.0,
+          2.0,
+          3.4
+        ],
+        "rotation_euler": [
+          0.0,
+          180.0,
+          0.0
+        ],
+        "scale": [
+          3.6,
+          2.4,
+          1.0
+        ]
+      },
+      "asset": {
+        "unity_type": "gaussian_splat",
+        "asset_path": "outputs/gaussian_assets/room_001/outside_view_01/outside_view_01.ply",
+        "renderer_name": "outside_view_01"
+      }
+    }
+  ],
+  "auto_layout_method": "rule_based_constraints_v0",
+  "auto_layout_note": "Initial semantic layout. Use Unity SceneLayoutAutoPlacer for true Renderer.bounds correction."
+}

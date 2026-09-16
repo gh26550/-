@@ -1,0 +1,17 @@
+{
+  "multiview_script": null,
+  "blender": "blender",
+  "num_points": 10000,
+  "steps": 1000,
+  "seed": 12345,
+  "image_downscale": 2,
+  "scale_min": 0.00005,
+  "scale_max": 0.005,
+  "background_color": "0.770588,0.771569,0.770588",
+  "use_zbuffer_visibility": false,
+  "zbuffer_depth_threshold": 0.01,
+  "use_anisotropic_init": true,
+  "use_alpha_loss": true,
+  "alpha_weight": 1.0,
+  "validation_views": [0, 6, 12]
+}

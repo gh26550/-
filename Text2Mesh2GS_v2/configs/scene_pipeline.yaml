@@ -1,0 +1,27 @@
+project:
+  output_root: outputs
+scene_input:
+  prompt_csv: examples/scene_prompts.csv
+scene_image_generation:
+  enabled: true
+  model_id: stabilityai/stable-diffusion-xl-base-1.0
+  width: 1024
+  height: 768
+  num_images: 2
+  seed: 12345
+  device: auto
+  low_vram: true
+  num_inference_steps: 30
+  guidance_scale: 6.5
+  prompt_template: "full room interior, entire floor and walls visible, coherent furniture layout, {prompt}"
+  negative_prompt: "text, watermark, blurry, cropped room"
+scene_graph:
+  default_room_size: [6.0, 4.0, 6.0]
+object_image_generation:
+  model_id: stabilityai/stable-diffusion-xl-base-1.0
+  width: 768
+  height: 768
+  num_images: 2
+  seed: 12345
+  device: auto
+  low_vram: true

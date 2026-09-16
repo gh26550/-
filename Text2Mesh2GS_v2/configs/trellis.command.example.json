@@ -1,0 +1,4 @@
+{
+  "description": "Replace this argument array with your installed TRELLIS CLI. This is a template, not a bundled model API.",
+  "command": ["python", "/absolute/path/to/your/trellis_runner.py", "--image", "{input_image}", "--output", "{expected_glb}"]
+}

@@ -1,0 +1,796 @@
+{
+  "schema_version": "2.0",
+  "scene_id": "room_001",
+  "scene_name": "nordic_living_room",
+  "coordinate_system": "room-local: x=right, y=up, front=-z; units=metres",
+  "room": {
+    "size": [
+      6.0,
+      4.0,
+      6.0
+    ],
+    "coordinate_system": "Unity-like: x=right, y=up, z=forward/depth"
+  },
+  "objects": [
+    {
+      "id": "floor_01",
+      "name": "light wooden floor",
+      "category": "floor",
+      "representation": "mesh",
+      "interaction_required": false,
+      "background_only": false,
+      "transform": {
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rotation_euler": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          6.0,
+          1.0,
+          6.0
+        ]
+      },
+      "asset": {
+        "unity_type": "procedural_mesh",
+        "asset_path": null,
+        "primitive_category": "floor",
+        "source_path": null,
+        "prefab_name": "floor_01",
+        "renderer_name": "floor_01"
+      },
+      "properties": {
+        "background_only": false,
+        "interaction_required": false,
+        "collision_required": true,
+        "walkable": true,
+        "movable": false,
+        "close_observation_required": false
+      },
+      "semantic_role": "physical",
+      "forward_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "ceiling_01",
+      "name": "white ceiling",
+      "category": "ceiling",
+      "representation": "mesh",
+      "interaction_required": false,
+      "background_only": false,
+      "transform": {
+        "position": [
+          0.0,
+          4.0,
+          0.0
+        ],
+        "rotation_euler": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          6.0,
+          1.0,
+          6.0
+        ]
+      },
+      "asset": {
+        "unity_type": "procedural_mesh",
+        "asset_path": null,
+        "primitive_category": "ceiling",
+        "source_path": null,
+        "prefab_name": "ceiling_01",
+        "renderer_name": "ceiling_01"
+      },
+      "properties": {
+        "background_only": false,
+        "interaction_required": false,
+        "collision_required": true,
+        "walkable": false,
+        "movable": false,
+        "close_observation_required": false
+      },
+      "semantic_role": "physical",
+      "forward_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "wall_back_01",
+      "name": "back white wall",
+      "category": "wall",
+      "representation": "mesh",
+      "interaction_required": false,
+      "background_only": false,
+      "transform": {
+        "position": [
+          0,
+          2,
+          3
+        ],
+        "rotation_euler": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          6.0,
+          4.0,
+          1.0
+        ]
+      },
+      "asset": {
+        "unity_type": "procedural_mesh",
+        "asset_path": null,
+        "primitive_category": "wall",
+        "source_path": null,
+        "prefab_name": "wall_back_01",
+        "renderer_name": "wall_back_01"
+      },
+      "properties": {
+        "background_only": false,
+        "interaction_required": false,
+        "collision_required": true,
+        "walkable": false,
+        "movable": false,
+        "close_observation_required": false
+      },
+      "semantic_role": "physical",
+      "forward_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "wall_left_01",
+      "name": "left white wall",
+      "category": "wall",
+      "representation": "mesh",
+      "interaction_required": false,
+      "background_only": false,
+      "transform": {
+        "position": [
+          -3,
+          2,
+          0
+        ],
+        "rotation_euler": [
+          0.0,
+          90.0,
+          0.0
+        ],
+        "scale": [
+          6.0,
+          4.0,
+          1.0
+        ]
+      },
+      "asset": {
+        "unity_type": "procedural_mesh",
+        "asset_path": null,
+        "primitive_category": "wall",
+        "source_path": null,
+        "prefab_name": "wall_left_01",
+        "renderer_name": "wall_left_01"
+      },
+      "properties": {
+        "background_only": false,
+        "interaction_required": false,
+        "collision_required": true,
+        "walkable": false,
+        "movable": false,
+        "close_observation_required": false
+      },
+      "semantic_role": "physical",
+      "forward_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "wall_right_01",
+      "name": "right white wall",
+      "category": "wall",
+      "representation": "mesh",
+      "interaction_required": false,
+      "background_only": false,
+      "transform": {
+        "position": [
+          3,
+          2,
+          0
+        ],
+        "rotation_euler": [
+          0.0,
+          90.0,
+          0.0
+        ],
+        "scale": [
+          6.0,
+          4.0,
+          1.0
+        ]
+      },
+      "asset": {
+        "unity_type": "procedural_mesh",
+        "asset_path": null,
+        "primitive_category": "wall",
+        "source_path": null,
+        "prefab_name": "wall_right_01",
+        "renderer_name": "wall_right_01"
+      },
+      "properties": {
+        "background_only": false,
+        "interaction_required": false,
+        "collision_required": true,
+        "walkable": false,
+        "movable": false,
+        "close_observation_required": false
+      },
+      "semantic_role": "physical",
+      "forward_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "window_frame_01",
+      "name": "large back window frame",
+      "category": "window_frame",
+      "representation": "mesh",
+      "interaction_required": false,
+      "background_only": false,
+      "transform": {
+        "position": [
+          0.0,
+          2.0,
+          2.95
+        ],
+        "rotation_euler": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          3.2,
+          2.2,
+          0.1
+        ]
+      },
+      "asset": {
+        "unity_type": "procedural_mesh",
+        "asset_path": null,
+        "primitive_category": "window_frame",
+        "source_path": null,
+        "prefab_name": "window_frame_01",
+        "renderer_name": "window_frame_01"
+      },
+      "properties": {
+        "background_only": false,
+        "interaction_required": false,
+        "collision_required": true,
+        "walkable": false,
+        "movable": false,
+        "close_observation_required": false
+      },
+      "semantic_role": "physical",
+      "forward_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "sofa_01",
+      "name": "light gray sofa",
+      "category": "sofa",
+      "representation": "mesh",
+      "interaction_required": true,
+      "background_only": false,
+      "transform": {
+        "position": [
+          1.2,
+          0.0,
+          1.35
+        ],
+        "rotation_euler": [
+          0.0,
+          -128.3675,
+          0.0
+        ],
+        "scale": [
+          1.7,
+          1.0,
+          1.0
+        ]
+      },
+      "asset": {
+        "unity_type": "mesh_gameobject",
+        "asset_path": "outputs/mesh_assets/room_001/sofa_01/sofa_01.glb",
+        "prefab_name": "sofa_01",
+        "source_path": "outputs/mesh_assets/room_001/sofa_01/sofa_01.glb",
+        "renderer_name": "sofa_01"
+      },
+      "properties": {
+        "background_only": false,
+        "interaction_required": true,
+        "collision_required": true,
+        "walkable": false,
+        "movable": true,
+        "close_observation_required": true
+      },
+      "semantic_role": "physical",
+      "forward_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "rug_01",
+      "name": "light gray rug",
+      "category": "rug",
+      "representation": "mesh",
+      "interaction_required": false,
+      "background_only": false,
+      "transform": {
+        "position": [
+          0.2,
+          0.02,
+          0.5
+        ],
+        "rotation_euler": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          2.5,
+          1.0,
+          2.0
+        ]
+      },
+      "asset": {
+        "unity_type": "procedural_mesh",
+        "asset_path": null,
+        "primitive_category": "rug",
+        "source_path": null,
+        "prefab_name": "rug_01",
+        "renderer_name": "rug_01"
+      },
+      "properties": {
+        "background_only": false,
+        "interaction_required": false,
+        "collision_required": false,
+        "walkable": false,
+        "movable": false,
+        "close_observation_required": false
+      },
+      "semantic_role": "physical",
+      "forward_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "chair_01",
+      "name": "wooden chair",
+      "category": "chair",
+      "representation": "mesh",
+      "interaction_required": true,
+      "background_only": false,
+      "transform": {
+        "position": [
+          -1.35,
+          0.0,
+          0.25
+        ],
+        "rotation_euler": [
+          0.0,
+          83.6598,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "asset": {
+        "unity_type": "mesh_gameobject",
+        "asset_path": "outputs/mesh_assets/room_001/chair_01/chair_01.glb",
+        "prefab_name": "chair_01",
+        "source_path": "outputs/mesh_assets/room_001/chair_01/chair_01.glb",
+        "renderer_name": "chair_01"
+      },
+      "properties": {
+        "background_only": false,
+        "interaction_required": true,
+        "collision_required": true,
+        "walkable": false,
+        "movable": true,
+        "close_observation_required": true
+      },
+      "semantic_role": "physical",
+      "forward_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "table_01",
+      "name": "round wooden coffee table",
+      "category": "table",
+      "representation": "mesh",
+      "interaction_required": true,
+      "background_only": false,
+      "transform": {
+        "position": [
+          0.0,
+          0.0,
+          0.4
+        ],
+        "rotation_euler": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.2,
+          1.0,
+          1.2
+        ]
+      },
+      "asset": {
+        "unity_type": "mesh_gameobject",
+        "asset_path": "outputs/mesh_assets/room_001/table_01/table_01.glb",
+        "prefab_name": "table_01",
+        "source_path": "outputs/mesh_assets/room_001/table_01/table_01.glb",
+        "renderer_name": "table_01"
+      },
+      "properties": {
+        "background_only": false,
+        "interaction_required": true,
+        "collision_required": true,
+        "walkable": false,
+        "movable": true,
+        "close_observation_required": true
+      },
+      "semantic_role": "physical",
+      "forward_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "bookshelf_01",
+      "name": "wooden bookshelf",
+      "category": "bookshelf",
+      "representation": "mesh",
+      "interaction_required": true,
+      "background_only": false,
+      "transform": {
+        "position": [
+          -2.3,
+          0.0,
+          2.7
+        ],
+        "rotation_euler": [
+          0.0,
+          180.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.4,
+          0.7
+        ]
+      },
+      "asset": {
+        "unity_type": "mesh_gameobject",
+        "asset_path": "outputs/mesh_assets/room_001/bookshelf_01/bookshelf_01.glb",
+        "prefab_name": "bookshelf_01",
+        "source_path": "outputs/mesh_assets/room_001/bookshelf_01/bookshelf_01.glb",
+        "renderer_name": "bookshelf_01"
+      },
+      "properties": {
+        "background_only": false,
+        "interaction_required": true,
+        "collision_required": true,
+        "walkable": false,
+        "movable": true,
+        "close_observation_required": true
+      },
+      "semantic_role": "physical",
+      "forward_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "vase_01",
+      "name": "white ceramic vase",
+      "category": "vase",
+      "representation": "mesh",
+      "interaction_required": true,
+      "background_only": false,
+      "transform": {
+        "position": [
+          0.0,
+          0.45,
+          0.4
+        ],
+        "rotation_euler": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          0.35,
+          0.35,
+          0.35
+        ]
+      },
+      "asset": {
+        "unity_type": "mesh_gameobject",
+        "asset_path": "outputs/mesh_assets/room_001/vase_01/vase_01.glb",
+        "prefab_name": "vase_01",
+        "source_path": "outputs/mesh_assets/room_001/vase_01/vase_01.glb",
+        "renderer_name": "vase_01"
+      },
+      "properties": {
+        "background_only": false,
+        "interaction_required": true,
+        "collision_required": true,
+        "walkable": false,
+        "movable": true,
+        "close_observation_required": true
+      },
+      "semantic_role": "physical",
+      "forward_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "plant_01",
+      "name": "large potted plant",
+      "category": "plant",
+      "representation": "mesh",
+      "interaction_required": true,
+      "background_only": false,
+      "transform": {
+        "position": [
+          2.2,
+          0.0,
+          2.0
+        ],
+        "rotation_euler": [
+          0.0,
+          -30.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "asset": {
+        "unity_type": "mesh_gameobject",
+        "asset_path": "outputs/mesh_assets/room_001/plant_01/plant_01.glb",
+        "prefab_name": "plant_01",
+        "source_path": "outputs/mesh_assets/room_001/plant_01/plant_01.glb",
+        "renderer_name": "plant_01"
+      },
+      "properties": {
+        "background_only": false,
+        "interaction_required": true,
+        "collision_required": true,
+        "walkable": false,
+        "movable": true,
+        "close_observation_required": true
+      },
+      "semantic_role": "physical",
+      "forward_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "outside_view_01",
+      "name": "outside view with street trees and buildings",
+      "category": "outside_view",
+      "representation": "gaussian",
+      "interaction_required": false,
+      "background_only": true,
+      "transform": {
+        "position": [
+          0.0,
+          2.0,
+          3.4
+        ],
+        "rotation_euler": [
+          0.0,
+          180.0,
+          0.0
+        ],
+        "scale": [
+          3.6,
+          2.4,
+          1.0
+        ]
+      },
+      "asset": {
+        "unity_type": "gaussian_splat",
+        "asset_path": "outputs/gaussian_assets/room_001/outside_view_01/outside_view_01.ply",
+        "renderer_name": "outside_view_01",
+        "source_path": "outputs/background_assets/room_001/outside_view_01/background_plate.glb",
+        "prefab_name": "outside_view_01"
+      },
+      "properties": {
+        "background_only": true,
+        "interaction_required": false,
+        "collision_required": false,
+        "walkable": false,
+        "movable": false,
+        "close_observation_required": false
+      },
+      "semantic_role": "background",
+      "forward_axis": [
+        0,
+        0,
+        1
+      ]
+    }
+  ],
+  "constraints": [
+    {
+      "type": "vertical",
+      "relation": "on",
+      "source": "vase_01",
+      "target": "table_01",
+      "weight": 1.0
+    },
+    {
+      "type": "distance",
+      "relation": "near",
+      "source": "chair_01",
+      "target": "table_01",
+      "weight": 1.0
+    },
+    {
+      "type": "rotation",
+      "relation": "face to",
+      "source": "chair_01",
+      "target": "table_01",
+      "weight": 1.0
+    },
+    {
+      "type": "distance",
+      "relation": "near",
+      "source": "sofa_01",
+      "target": "table_01",
+      "weight": 1.0
+    },
+    {
+      "type": "rotation",
+      "relation": "face to",
+      "source": "sofa_01",
+      "target": "table_01",
+      "weight": 1.0
+    },
+    {
+      "type": "relative",
+      "relation": "against",
+      "source": "bookshelf_01",
+      "target": "wall_back_01",
+      "weight": 1.0
+    },
+    {
+      "type": "relative",
+      "relation": "left of",
+      "source": "bookshelf_01",
+      "target": "window_frame_01",
+      "weight": 1.0
+    },
+    {
+      "type": "distance",
+      "relation": "near",
+      "source": "plant_01",
+      "target": "window_frame_01",
+      "weight": 1.0
+    },
+    {
+      "type": "relative",
+      "relation": "right of",
+      "source": "plant_01",
+      "target": "window_frame_01",
+      "weight": 1.0
+    },
+    {
+      "type": "background",
+      "relation": "behind",
+      "source": "outside_view_01",
+      "target": "window_frame_01",
+      "weight": 1.0
+    },
+    {
+      "type": "relative",
+      "relation": "in front of",
+      "source": "chair_01",
+      "target": "table_01",
+      "weight": 1.0
+    },
+    {
+      "type": "relative",
+      "relation": "behind",
+      "source": "sofa_01",
+      "target": "table_01",
+      "weight": 1.0
+    },
+    {
+      "type": "relative",
+      "relation": "right of",
+      "source": "sofa_01",
+      "target": "table_01",
+      "weight": 1.0
+    },
+    {
+      "type": "alignment",
+      "relation": "center aligned with",
+      "source": "outside_view_01",
+      "target": "window_frame_01",
+      "weight": 1.0
+    },
+    {
+      "type": "alignment",
+      "relation": "parallel to",
+      "source": "outside_view_01",
+      "target": "wall_back_01",
+      "weight": 1.0
+    },
+    {
+      "type": "visibility",
+      "relation": "cover",
+      "source": "outside_view_01",
+      "target": "window_frame_01",
+      "weight": 1.0
+    },
+    {
+      "type": "visibility",
+      "relation": "visible through",
+      "source": "outside_view_01",
+      "target": "window_frame_01",
+      "weight": 1.0
+    },
+    {
+      "type": "layout",
+      "relation": "center of room",
+      "source": "table_01",
+      "target": "room_01",
+      "weight": 1.0,
+      "note": "Place the coffee table near the central seating area. This is evaluated by distance from roomCenterXZ in SemanticConstraintScenePlacer."
+    }
+  ]
+}
