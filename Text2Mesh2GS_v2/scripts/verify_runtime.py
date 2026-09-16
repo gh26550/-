@@ -1,5 +1,6 @@
 """Check imports and a tiny CUDA forward/backward pass without downloading models."""
 import json
+import os
 import platform
 import subprocess
 from importlib.metadata import version
@@ -40,6 +41,8 @@ def main():
     print(json.dumps({"status": "passed", "python": platform.python_version(),
                       "gpu": torch.cuda.get_device_name(0), "torch": torch.__version__,
                       "cuda": torch.version.cuda, "gsplat": version("gsplat"),
+                      "cuda_arch_list": os.environ.get("TORCH_CUDA_ARCH_LIST"),
+                      "extension_cache": os.environ.get("TORCH_EXTENSIONS_DIR"),
                       "diffusers": version("diffusers"), "transformers": version("transformers"),
                       "blender": blender, "gsplat_forward_backward": True}, indent=2))
 

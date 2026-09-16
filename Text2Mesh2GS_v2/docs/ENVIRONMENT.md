@@ -67,6 +67,18 @@ T2M_PYTHON=/home/dpc7/miniforge/envs/gsplat/bin/python bash setup_wsl.sh
 - Blender 5.1.2のコマンド起動が成功。
 - 新環境でPython回帰テスト14件が成功。
 
+## CUDAエラー `no kernel image is available` の修正
+
+旧activateは`.bashrc`の`TORCH_CUDA_ARCH_LIST=8.9`を引き継いでいました。このPCのRTX 5070 Tiは12.0なので、不適合なCUDA拡張ができていました。修正版は実GPUから対象を自動設定し、環境・PyTorch・GPU対象ごとの専用キャッシュへビルドします。共有キャッシュや.bashrcは削除・変更しません。
+
+```bash
+git pull --ff-only
+source activate_wsl.sh
+python scripts/verify_runtime.py
+```
+
+このPCでは起動時に`CUDA architecture: 12.0`が表示されます。新キャッシュでの初回ビルドには数分かかります。手動指定する場合のみ`T2M_CUDA_ARCH_LIST`と`T2M_EXTENSIONS_DIR`を使います。別のConda環境へ切り替える場合は新しいターミナルを使ってください。
+
 ## 参考
 
 - [PyTorch公式のバージョン別インストール手順](https://pytorch.org/get-started/previous-versions/)
