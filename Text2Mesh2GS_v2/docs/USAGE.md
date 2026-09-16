@@ -58,6 +58,10 @@ python scripts/23_build_scene_graph_from_text_image.py --scene_id room_001 --ima
 
 23は既定で初回認識後にもう一度画像を見直し、認識漏れ・重複・表現形式を点検します。初回とレビューの監査JSONを別々に保存します。`local_llm.vision_review: false`で省略できますが、人による画像照合は必要です。
 
+画像端の座標が寸法の2%以内だけ超過した場合は画像端で切り詰め、同じカテゴリ・表現形式・可動性・元のbboxが完全一致する別IDの検出は最初のIDに統合します。元出力は監査JSONのraw_result、補正内容はcorrectionsに保存し、uncertaintiesにも確認を促す注記を追加します。似た位置の別物体や異なるカテゴリは自動統合しません。大きな座標超過・同一ID重複・無効な矩形は引き続きエラーです。
+
+`Model output invalid after bounded repair`の場合は、続けて表示される対象ID・理由と`.vision_audit.json`または`.vision_review.json`を確認します。サーバー接続失敗とは異なり、モデル応答の検証エラーです。
+
 ## 4. LLMで意味制約を生成
 
 ```bash

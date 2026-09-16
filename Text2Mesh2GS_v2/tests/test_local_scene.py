@@ -58,6 +58,26 @@ class LocalSceneTests(unittest.TestCase):
     def test_missing_image_is_error(self):
         with self.assertRaises(FileNotFoundError): m.image_info("nonexistent-image-12345.png")
 
+    def test_edge_overshoot_and_duplicate_are_audited(self):
+        data = self.inventory(); data["objects"] = data["objects"][:1]
+        data["objects"][0]["bbox"] = [864, 397, 1035, 629]
+        other = copy.deepcopy(data["objects"][0]); other["id"] = "chair_02"
+        data["objects"].append(other)
+        cleaned, changes = m.normalize_inventory(data, {"width": 1024, "height": 768})
+        self.assertEqual(len(cleaned["objects"]), 1)
+        self.assertEqual(cleaned["objects"][0]["bbox"], [864, 397, 1024, 629])
+        self.assertEqual(data["objects"][0]["bbox"][2], 1035)
+        self.assertIn("exact_duplicate", [c["kind"] for c in changes])
+        m.check_inventory(cleaned, {"width": 1024, "height": 768})
+
+    def test_large_overshoot_and_duplicate_ids_still_fail(self):
+        data = self.inventory(); data["objects"][0]["bbox"] = [800, 20, 1200, 700]
+        cleaned, _ = m.normalize_inventory(data, {"width": 1024, "height": 768})
+        with self.assertRaises(ValueError): m.check_inventory(cleaned, {"width": 1024, "height": 768})
+        data = self.inventory(); data["objects"].append(copy.deepcopy(data["objects"][0]))
+        cleaned, _ = m.normalize_inventory(data, {"width": 1024, "height": 768})
+        with self.assertRaises(ValueError): m.check_inventory(cleaned, {"width": 1024, "height": 768})
+
     def test_semantic_repair_not_rules_fallback(self):
         bad = self.inventory(); bad["objects"][0]["bbox"] = [1, 1, 0, 0]
         good = self.inventory()

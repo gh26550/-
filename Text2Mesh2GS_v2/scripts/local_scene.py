@@ -1,5 +1,6 @@
 """Local vision/LLM inference, strict contracts and bounded semantic repair."""
 import base64
+import copy
 import hashlib
 import json
 from pathlib import Path
@@ -121,23 +122,63 @@ def ask(settings, prompt, schema, image, previous=None, error=None):
         raise ModelOutputError("Return valid JSON only: " + str(exc), content) from exc
 
 
-def generate(settings, prompt, schema, image, validate, audit_path):
+def generate(settings, prompt, schema, image, validate, audit_path, normalize=None):
     previous, error, attempts = None, None, []
     for attempt in range(1 + min(2, max(0, settings.get("repair_attempts", 1)))):
+        raw_result, corrections = None, []
         try:
             previous = ask(settings, prompt, schema, image, previous, error)
             jsonschema.validate(previous, schema)
+            raw_result = copy.deepcopy(previous)
+            corrections = []
+            if normalize is not None:
+                previous, corrections = normalize(previous)
+                jsonschema.validate(previous, schema)
             validate(previous)
-            attempts.append({"attempt": attempt + 1, "result": previous, "valid": True})
+            attempts.append({"attempt": attempt + 1, "raw_result": raw_result,
+                             "result": previous, "corrections": corrections, "valid": True})
             bridge.write(audit_path, {"model": settings["model"], "attempts": attempts})
             return previous
         except (ValueError, KeyError, jsonschema.ValidationError) as exc:
             if isinstance(exc, ModelOutputError):
                 previous = exc.result
             error = str(exc)[:3000]
-            attempts.append({"attempt": attempt + 1, "result": previous, "valid": False, "error": error})
+            attempts.append({"attempt": attempt + 1, "raw_result": raw_result, "result": previous,
+                             "corrections": corrections, "valid": False, "error": error})
             bridge.write(audit_path, {"model": settings["model"], "attempts": attempts})
-    raise ValueError("Model output invalid after bounded repair. See " + str(audit_path))
+    raise ValueError("Model output invalid after bounded repair: " + str(error) + ". See " + str(audit_path))
+
+
+def normalize_inventory(data, reference):
+    """Canonicalize small edge overshoot and exact duplicate detections, not missing content."""
+    data = copy.deepcopy(data)
+    rows, seen, corrections = [], {}, []
+    width, height = reference["width"], reference["height"]
+    for item in data["objects"]:
+        box = item["bbox"]
+        # A fully out-of-frame or degenerate detection is never rescued by clipping.
+        if not (0 <= box[0] < box[2] and 0 <= box[1] < box[3]
+                and box[0] < width and box[1] < height):
+            rows.append(item)
+            continue
+        if box[2] > width or box[3] > height:
+            if box[2] <= width * 1.02 and box[3] <= height * 1.02:
+                clipped = [box[0], box[1], min(box[2], width), min(box[3], height)]
+                corrections.append({"kind": "clip_image_edge", "id": item["id"], "before": box[:], "after": clipped})
+                item["bbox"] = clipped
+        # Compare the original boxes: clipping must not merge different detections.
+        key = (item["category"], item["representation"], item["movable"], tuple(box))
+        if key in seen and item["id"] != seen[key]:
+            corrections.append({"kind": "exact_duplicate", "removed_id": item["id"], "kept_id": seen[key], "bbox": box[:]})
+            continue
+        seen[key] = item["id"]
+        rows.append(item)
+    data["objects"] = rows
+    if corrections:
+        note = "Coordinate clipping or exact duplicate consolidation was applied; inspect the audit corrections and verify the image."
+        if note not in data["uncertainties"]:
+            data["uncertainties"].append(note)
+    return data, corrections
 
 
 def scaffold(size):
@@ -158,13 +199,13 @@ def check_inventory(data, reference=None):
         seen.add(item["id"])
         key = tuple(item["bbox"])
         if key in boxes:
-            raise ValueError("Repeated identical object bounding box; do not duplicate the same visual instance")
+            raise ValueError(f"{item['id']}: repeated identical bounding box {item['bbox']}; verify object identity")
         boxes.add(key)
         x1, y1, x2, y2 = item["bbox"]
         if not (0 <= x1 < x2 and 0 <= y1 < y2):
             raise ValueError("Bounding box must be pixel xyxy with positive area")
         if reference and (x2 > reference["width"] or y2 > reference["height"]):
-            raise ValueError("Bounding box exceeds actual image width/height")
+            raise ValueError(f"{item['id']}: bbox={item['bbox']} exceeds image {reference['width']}x{reference['height']} pixels; correct this box, do not add objects")
         bridge.vector(item["dimensions_m"], "estimated dimensions", True)
         if item["representation"] == "procedural" and item["category"] != "window_frame":
             raise ValueError(f"Object {item['id']}: procedural category must be exactly window_frame, got {item['category']}. Furniture is mesh; omit supplied room anchors.")
