@@ -59,3 +59,6 @@ python pipeline.py prepare --scene outputs/scene_graphs/room_001/scene_graph.jso
 モデルの取得時はインターネットを使います。認識時は127.0.0.1のOllamaのみを使い、serveスクリプトはクラウド機能を無効化します。推論終了時にモデルをGPUから解放し、後続のSDXL/TRELLIS/gsplatとVRAMを共有します。
 
 生成アセット・モデル重みはGitに含めません。TRELLIS本体とその実行コマンド設定は別途必要です。
+
+## incompleteで停止した既存シーンの修復
+[支持先・窓枠の修復手順](docs/OBJECT_REVIEW.md)を参照してください。34は既存の支持先を再検証します。窓の固定位置を画像から推定する場合は--estimate-fixedを追加します。

@@ -65,3 +65,24 @@ statusはconfirmed / part_or_duplicate / outdoor_background / needs_reviewです
 ## 検証範囲
 
 今回の自動テストは、19個の植物への個別要求、未解決時の出力拒否、キャッシュ、固定支持面、シーン変更の検出などを確認します。実モデルでは提供画像のソファ1個について個別生成・画像レビューが完了し、制約2件を生成しました。全家具の再認識から実アセット生成・Unity表示までの一括検証は未実施です。同じVLMによる再照合は誤認識を完全には排除しません。
+
+## 支持先の誤認と窓枠の修復（2026-09-16追補）
+
+旧版では、窓枠が可動家具になることと、家具の支持先をテレビ台と誤認したまま確認済みにすることがありました。34は既存シーンの支持先を独立した短い画像質問で再確認します。窓枠は固定構造に分類します。元scene_graphは日時付き`.before_support_review.*.json`に保存し、訂正した支持先をscene_graphへ反映します。新しい23にも同じ支持先検証を追加しました。
+
+窓の位置が未定で、推定の固定配置を作成する場合：
+
+```bash
+cd ~/Text2Mesh2GS_v2
+source activate_wsl.sh
+python scripts/34_generate_spatial_constraints.py --scene_graph outputs/scene_graphs/room_001/scene_graph.json --output outputs/scene_graphs/room_001/spatial_constraints.json --estimate-fixed
+python pipeline.py prepare --scene outputs/scene_graphs/room_001/scene_graph.json --constraints outputs/scene_graphs/room_001/spatial_constraints.json --output outputs/room_001
+```
+
+`--estimate-fixed`は、画像から窓の設置壁と壁面内の矩形を推定することを許可します。窓の横幅・高さは推定値、奥行き0.1mは設計用の仮値です。同じ壁の推定窓が重なる場合は、寸法と順序を保って壁内で離し、調整前座標と理由を記録します。壁に収まらない場合は停止し、寸法を勝手に縮めません。`placement_state=fixed_estimated`は測定済み・確認済みの座標ではありません。
+
+prepareは`fixed_anchor_proposals.json`を追加出力します。UnityではそのID・Transform・寸法に従って窓の参照物体を用意し、実際の見た目を確認してください。既存ReferenceRoomBuilderV2は背面窓1枚用なので、2枚の窓を自動作成する機能はありません。
+
+34の制約は各物体最大4件に絞り、左右両壁への同時接触を拒否します。曖昧な支持先（unknown）はキャッシュしません。検証規則に合わなくなった古い成功キャッシュも破棄して再生成します。支持先が未確定の場合やモデルが根拠を示せない場合の出力停止は維持しています。
+
+この修復は既存の認識一覧を保持します。植物・ラグ・オットマンなどの検出漏れや物体説明の精度改善を保証するものではありません。物体を追加・修正した場合は34を再実行してください。

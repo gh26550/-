@@ -131,3 +131,5 @@ python pipeline.py assets --scene outputs/room_001/scene.json
 ```
 
 GLB/PLYが未配置ならこの検査は失敗します。画像認識やJSON生成の失敗とは別です。Unityレポートは`Assets/GeneratedLayoutsV2/`へ保存されます。
+
+支持先の誤認によるincompleteや窓位置未定の対処は、[支持先と窓の修復手順](OBJECT_REVIEW.md)を参照してください。窓位置の推定を許可する場合は34に--estimate-fixedを追加します。

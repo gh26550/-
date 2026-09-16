@@ -179,6 +179,10 @@ def validate(scene):
             raise ValueError(f"Furniture solver does not support {rel}")
         relations.add((src, rel, dst))
     for src, rel, dst in relations:
+        if rel == 'against' and ids[dst]['category'] != 'wall':
+            raise ValueError('against requires a wall target')
+        if rel == 'against' and dst == 'wall_left_01' and (src, 'against', 'wall_right_01') in relations:
+            raise ValueError('Contradictory contact with opposite walls: ' + src)
         opposite = {"left of": "right of", "right of": "left of", "behind": "in front of", "in front of": "behind"}.get(rel)
         if opposite and ((src, opposite, dst) in relations or (dst, rel, src) in relations):
             raise ValueError(f"Contradictory relations: {src} {rel} {dst}")
@@ -216,6 +220,10 @@ def export_bundle(scene, out, root):
         import_jobs.append({"object_id": obj["id"], "source_path": str(source) if source else None, "status": status,
                             "generation": {"multiview_output_dir": base + "/multiview", "gaussian_output_dir": base + "/training", "output_ply": obj["asset"]["asset_path"]}})
     write(out / "scene.json", scene)
+    write(out / "fixed_anchor_proposals.json", {'scene_id': scene['scene_id'],
+          'warning': 'Estimated design positions, not measured geometry. Review in Unity.',
+          'objects': [{k: copy.deepcopy(o[k]) for k in ('id', 'transform', 'dimensions_m', 'fixed_placement_proposal')}
+                      for o in scene['objects'] if o.get('fixed_placement_proposal')]})
     write(out / "layout_for_unity.json", {"schema_version": VERSION, "scene_id": scene["scene_id"], "room": scene["room"], "unity_objects": unity})
     write(out / "spatial_constraints.json", {"schema_version": VERSION, "scene_id": scene["scene_id"], "constraints": scene["constraints"]})
     write(out / "gaussian_import_jobs.json", {"schema_version": VERSION, "scene_id": scene["scene_id"], "jobs": import_jobs})
