@@ -17,6 +17,15 @@ scene_image_generation:
   negative_prompt: "text, watermark, blurry, cropped room"
 scene_graph:
   default_room_size: [6.0, 4.0, 6.0]
+local_llm:
+  url: http://127.0.0.1:11434
+  model: qwen2.5vl:7b
+  num_ctx: 16384
+  num_predict: 8000
+  timeout_seconds: 600
+  repair_attempts: 1
+  vision_review: true
+  seed: 12345
 object_image_generation:
   model_id: stabilityai/stable-diffusion-xl-base-1.0
   width: 768

@@ -1,99 +1,139 @@
-# 導入・実行手順
+# 実行手順 — ローカル画像認識版
 
-## 1. GitHubから取得
+## 0. 更新とPython環境
+
+Ubuntu-22.04内で実行します。このPCでクローン済みの場合：
 
 ```bash
-git clone https://github.com/gh26550/-.git Text2Mesh2GS-delivery
-cd Text2Mesh2GS-delivery/Text2Mesh2GS_v2
+cd ~/Text2Mesh2GS-delivery
+git pull --ff-only
+cd Text2Mesh2GS_v2
+source activate_wsl.sh
+python -m pip install -r requirements-runtime-lock.txt
+python scripts/verify_runtime.py
 ```
 
-以降はこのフォルダを作業ディレクトリにします。パスはここからの相対パスです。Pythonの軽い確認はWindowsでも可能です。画像生成・学習は既存のWSL/CUDA環境を利用することを推奨します。
+新規取得・環境作成は[環境説明書](ENVIRONMENT.md)を参照してください。作業ディレクトリは常に`Text2Mesh2GS_v2`です。旧00/01/02/17/18/19/20/21/24/25/26/27/35は削除しました。旧手順の25/26を呼ぶ必要はありません。
 
-## 2. モデル不要の動作確認
+## 1. ローカルモデルの準備・起動
 
-Python 3.10以上で実行します。
+このPCにはOllamaとQwen2.5-VL 7Bを導入します。別PC・再導入時は：
 
 ```bash
-python pipeline.py prepare --scene examples/scene_v2.json --output outputs/room_001
+python setup_local_llm.py
+bash serve_local_llm.sh
+```
+
+`serve_local_llm.sh`の端末は開いたままにします。別のUbuntu端末で同じフォルダへ移動し、`source activate_wsl.sh`を実行してからモデルを取得します（初回のみ）。
+
+```bash
+~/.local/share/text2mesh2gs/ollama/bin/ollama pull qwen2.5vl:7b
+```
+
+以降はサーバーを起動した状態で実行します。既に11434番ポートでサーバーが動いていれば二重起動しません。推論設定は`configs/scene_pipeline.yaml`のlocal_llmです。APIキーは不要です。モデル本体はPythonのvenvとは別に`~/.local/share/text2mesh2gs/`へ保存します。
+
+## 2. 最初の部屋画像を生成・選択
+
+```bash
+python scripts/22_generate_scene_images.py --config configs/scene_pipeline.yaml --scene_id room_001
+```
+
+入力テキストは`examples/scene_prompts.csv`です。`outputs/scene_images/room_001/`の候補を確認して1枚選びます。既存の部屋画像がある場合は22を省略し、その画像を23へ渡せます。
+
+## 3. 画像を認識して家具を抽出
+
+```bash
+python scripts/23_build_scene_graph_from_text_image.py --scene_id room_001 --image_path outputs/scene_images/room_001/candidate_00.png
+```
+
+既存の元プロジェクトの画像を使う例：
+
+```bash
+python scripts/23_build_scene_graph_from_text_image.py --scene_id room_001 --image_path /home/dpc7/Text2Mesh2GS/outputs/scene_images/room_001/candidate_00.png
+```
+
+`outputs/scene_graphs/room_001/scene_graph.json`に個々の物体、bbox、見た目、生成用プロンプト、推定寸法、信頼度、根拠を保存します。椅子が2脚なら2インスタンスです。クッションや本などはソファ・棚のアセットに含め、同じ物体の重複を避けます。天井・壁に固定された照明など、現在の家具配置で扱えない物体はuncertaintiesに記録して手動対応します。画像が存在しなければ停止します。テキストから家具一覧を補完しません。
+
+画像と認識一覧を照合し、必要ならJSONを修正します。推定寸法は計測値ではありません。床・壁・天井は設定寸法の参照構造です。家具の初期座標はゼロで、配置の答え座標を生成しません。
+
+23は既定で初回認識後にもう一度画像を見直し、認識漏れ・重複・表現形式を点検します。初回とレビューの監査JSONを別々に保存します。`local_llm.vision_review: false`で省略できますが、人による画像照合は必要です。
+
+## 4. LLMで意味制約を生成
+
+```bash
+python scripts/34_generate_spatial_constraints.py --scene_graph outputs/scene_graphs/room_001/scene_graph.json --output outputs/scene_graphs/room_001/spatial_constraints.json
+```
+
+34も同じ画像を読みます。画像を移動した場合は`--image_path`で新しいパスを指定できますが、SHA256が一致する必要があります。
+
+根拠がある場合にon/near/face to/部屋中心/窓背景のcenter・parallel・cover・visibility等を出力します。欠落ID、未対応関係、支持循環、方向矛盾、制約のない家具などを検査し、問題はLLMへ返して修復します。上限まで失敗したら停止します。監査JSONに試行結果とエラーを保存します。
+
+## 5. Unity入力と生成ジョブへ変換
+
+```bash
+python pipeline.py prepare --scene outputs/scene_graphs/room_001/scene_graph.json --constraints outputs/scene_graphs/room_001/spatial_constraints.json --output outputs/room_001
 python pipeline.py validate --scene outputs/room_001/scene.json
-python -m unittest discover -s tests -v
 ```
 
-サンプルは14物体・18制約です。`outputs/room_001`にUnity用JSONや生成ジョブが作成されます。この段階では家具モデルやGaussianは生成されません。
+prepareはUnity用JSONのほか`mesh_object_prompts.csv`と`gaussian_background_prompts.json`も作成します。旧25/26は不要です。生成プロンプトはモデルの出力を引き継ぎ、カテゴリ別の定型家具判断は行いません。GLB/PLY本体はまだ生成されません。
 
-独自の旧形式JSONは次のように変換します。
+## 6. 家具を生成
 
 ```bash
-python pipeline.py prepare --scene YOUR_LAYOUT.json --constraints YOUR_CONSTRAINTS.json --output outputs/my_scene
+python scripts/28_generate_object_front_images.py --config configs/scene_pipeline.yaml --mesh_csv outputs/room_001/mesh_object_prompts.csv --remove_bg
+python scripts/29_prepare_trellis_jobs.py --mesh_csv outputs/room_001/mesh_object_prompts.csv --output_json outputs/room_001/trellis_jobs.json --output_csv outputs/room_001/trellis_jobs.csv
+python scripts/30_run_trellis_jobs.py --jobs outputs/room_001/trellis_jobs.json --command-config configs/trellis.command.json --output outputs/room_001/trellis_run.json
 ```
 
-## 3. 家具と背景を用意
+`configs/trellis.command.example.json`をコピーして、実際の外部TRELLISコマンドを設定してください。例示パスのままでは動きません。計画を確認してから30に`--execute`を付けます。29の`--candidate_index`で使用画像を選べます。
 
-既存アセットがある場合は新規生成を省略できます。生成する場合の詳細コマンドは[READMEの工程2・3](../README.md)を参照してください。
+必要に応じてBlenderで整理・正規化します。以下の入出力名・高さは例です。
 
-| 順序 | 操作 | 次へ進む条件 |
-|---|---|---|
-| 1 | 22で部屋画像、23でscene graph、34で制約の初期案を作る | 物体IDと制約を確認 |
-| 2 | prepareで共通形式とジョブを作る | validate成功 |
-| 3 | 25→28→29で家具画像とTRELLISジョブを作る | 画像候補を確認 |
-| 4 | 30で利用中のTRELLIS実行器を呼ぶ | 外部コマンド設定済み、GLB生成成功 |
-| 5 | 必要に応じ04→10→12でGLBを整理・寸法調整 | 原点・大きさ・正面を確認 |
-| 6 | 26→31で背景画像、03で背景板GLBを作る | 選んだ背景GLBが存在 |
-| 7 | scene.jsonのasset.source_pathを合わせprepareを再実行 | GaussianジョブがGLBを参照 |
-| 8 | pipeline gaussianで計画を確認し、--executeで実行 | 05→07_5→08→09が完了 |
+```bash
+blender --background --python scripts/04_clean_mesh_blender.py -- --input outputs/raw_chair.glb --output outputs/clean_chair.glb
+blender --background --python scripts/10_convert_glb_webp_to_png.py -- --input outputs/clean_chair.glb --output outputs/png_chair.glb
+blender --background --python scripts/12_normalize_glb_for_unity.py -- --input outputs/png_chair.glb --output outputs/mesh_assets/room_001/chair_01/chair_01.glb --target_height 0.9 --yaw_deg 0
+```
 
-TRELLIS本体は同梱しません。`configs/trellis.command.example.json`の説明用パスを実環境のコマンドへ変更した設定が必要です。画像生成用とGaussian学習用のrequirementsは依存候補であり、GPU環境ごとのバージョン調整が必要です。
+Blenderスクリプトは作業シーンをクリアするため、独立したbackgroundプロセスで実行してください。実アセットの寸法・正面を確認します。既存アセットがある場合は期待GLBパスへ配置して生成を省略できます。
 
-生成アセットは`outputs/mesh_assets/<scene_id>/<object_id>/<object_id>.glb`と`outputs/gaussian_assets/<scene_id>/<object_id>/<object_id>.ply`に揃えます。
+## 7. 背景を生成してGaussian化
+
+```bash
+python scripts/31_generate_background_images.py --prompts outputs/room_001/gaussian_background_prompts.json
+```
+
+計画を確認して`--execute`を追加します。モデルが認識した背景のIDに合わせて、選んだ画像からGLBを作ります。以下の`outside_view_01`は例です。
+
+```bash
+blender --background --python scripts/03_create_background_plate_glb.py -- --image outputs/background_images/room_001/outside_view_01/candidate_00.png --output outputs/background_assets/room_001/outside_view_01/background_plate.glb
+```
+
+`outputs/room_001/scene.json`内の該当背景の`asset.source_path`を上記GLBパスへ設定して再変換します。
+
+```bash
+python pipeline.py prepare --scene outputs/room_001/scene.json --output outputs/room_001
+python pipeline.py gaussian --jobs outputs/room_001/gaussian_import_jobs.json --config configs/gaussian.json --output outputs/gaussian_run
+```
+
+plan.jsonを確認し、同じgaussianコマンドへ`--execute`を追加すると05→07_5→08→09が動きます。背景板は平面表現であり、真の奥行き復元ではありません。背景が認識されていないシーンではこの工程を省略します。
+
+## 8. Unity配置
+
+1. `unity/`のC#とprepare出力のlayout_for_unity.json / spatial_constraints.jsonをAssets内へコピー。
+2. 既存インポーターで家具GLB・Gaussian PLYをシーンへ導入。
+3. 床中心を原点とするroomFrame（world scale=1）、家具のmovableRoot、固定構造のreferenceRootを用意。
+4. 各対象のSceneObjectIdV2を今回認識されたIDと一致させる。モデル正面が+Z以外ならforwardAxisを設定。
+5. SemanticScenePlacerV2にJSONと参照を設定。ContextMenuからApply→Audit→Export。
+6. 背景はWindowBackgroundPlacerV2へ実際のgaussianId・windowId・wallIdとTransformを指定。窓基準+Zは屋外。
+7. RendererからBoundsを取得できないGaussianにはPlacementBounds.localBoundsを設定。Apply→Audit→Export後、実カメラで見た目を確認。
+
+補助ReferenceRoomBuilderV2は背面1窓の矩形部屋専用です。画像の窓位置・数・建築形状を自動再現しません。任意の窓IDや複数窓は固定構造を手動で用意し、背景ごとにコンポーネントを指定します。正規化済み家具はapplyJsonScale=falseのまま使います。
+
+家具配置は意味制約と物理条件を満たす候補を探します。背景のcoverを求める場合はfitInsideとの目的の違いに注意してください。visible throughはカメラ検証待ちとして報告します。
 
 ```bash
 python pipeline.py assets --scene outputs/room_001/scene.json
 ```
 
-Blender工程は独立した`blender --background`で実行します。処理中にシーンをクリアするため、編集中のBlenderシーン上で実行しないでください。
-
-## 4. Unityに追加
-
-1. `unity/`内のC#を、新しい`Assets/Text2Mesh2GS_V2/`へコピーします。
-2. prepareで生成した`layout_for_unity.json`と`spatial_constraints.json`をAssets内へコピーします。
-3. 既存のGLBインポーターとGaussian表示機能でアセットをインポートし、シーンへ置きます。このパッケージ自体はインポーターではありません。
-4. 空オブジェクト`roomFrame`を作り、床の中心を原点、ワールドscaleを(1,1,1)にします。+Xが右、+Yが上、-Zが手前です。
-5. 家具の親`movableRoot`と、壁など固定構造の親`referenceRoot`を用意します。家具ルート同士は入れ子にしません。
-6. 各対象に`SceneObjectIdV2`を追加し、JSONのidと一致させます。モデルの正面が+Z以外ならforwardAxisを指定します。
-7. `SemanticScenePlacerV2`を追加し、2つのJSON・roomFrame・2つのルートをInspectorで指定します。
-8. コンポーネントのメニューから`Apply Semantic Layout V2`を実行します。続いて`Audit Current Layout V2`と`Export Placement Report V2`を実行します。
-
-固定構造がない場合は`ReferenceRoomBuilderV2`で矩形の部屋と背面窓を作れます。生成された固定構造の親をreferenceRootとして指定してください。窓の寸法・位置はInspectorで設定します。既存の配置スクリプトが同じ家具を動かしている場合は、その自動実行を無効にします。
-
-## 5. 窓背景を調整
-
-1. `WindowBackgroundPlacerV2`へGaussian、窓基準windowBasis、制約JSONを指定します。
-2. windowBasisは単位scale、+Zを屋外にします。窓の4辺または明示的な開口Boundsを指定します。
-3. Rendererから寸法を取得できないGaussianには`PlacementBounds.localBounds`を実アセットに合わせて設定します。
-4. fitInside（内側に収める）とcover（全面を覆う）の目的を選び、Apply/Audit/Exportを実行します。
-5. 実際に使うカメラからPLYの見た目を確認します。`visible through`は自動で成功扱いになりません。
-
-## 6. レポートを読む
-
-`Assets/GeneratedLayoutsV2/`へ家具と窓背景のJSONレポートを保存します。
-
-- score_100：意味制約の重み付き達成度。
-- coverage_100：期待する制約のうち評価できた割合。
-- physical_violations：物理違反の件数。
-- constraints：どの関係がok/unmet/missingになったか。
-- objects：家具の最終姿勢。
-
-家具のstatusがsuccessになるには、意味制約の全達成と物理判定の両方が必要です。点数だけで完了を判定しないでください。
-
-## よくある問題
-
-| 症状 | 確認箇所 |
-|---|---|
-| missing_source / missing_target | ID、対象ルート、Boundsの取得可否 |
-| roomFrameのscaleエラー | 親を含めワールドscaleが1か |
-| 家具の大きさが不自然 | 12での正規化とapplyJsonScaleの二重適用 |
-| againstが不自然 | 壁参照のforwardが壁の法線方向か |
-| Gaussianジョブが準備未完了 | source_pathのGLBが存在するか、prepareを再実行したか |
-| scoreが高いのにincomplete | 物理違反、未達の制約、欠落の有無 |
-| fitInsideでcoverがunmet | 余白・縦横比による目的の衝突。設定と制約を見直す |
-| TRELLISが動かない | サンプルの架空パスを実際の実行器へ変更したか |
+GLB/PLYが未配置ならこの検査は失敗します。画像認識やJSON生成の失敗とは別です。Unityレポートは`Assets/GeneratedLayoutsV2/`へ保存されます。

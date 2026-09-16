@@ -80,3 +80,4 @@ tzdata==2026.4
 urllib3==2.8.0
 wadler_lindig==0.1.7
 zipp==4.1.0
+zstandard==0.25.0

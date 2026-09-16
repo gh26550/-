@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import csv
 import json
 import math
 import subprocess
@@ -50,8 +51,19 @@ def normalise(raw, constraint_file=None):
               "coordinate_system": "room-local: x=right, y=up, front=-z; units=metres",
               "room": copy.deepcopy(scene.get("room", {"size": [6, 4, 6]})), "objects": [],
               "constraints": copy.deepcopy((constraint_file or scene).get("constraints", []))}
+    for key in ("reference_image", "generation"):
+        if key in scene:
+            result[key] = copy.deepcopy(scene[key])
+    if constraint_file:
+        result["constraint_generation"] = {k: copy.deepcopy(v) for k, v in constraint_file.items()
+                                           if k not in {"constraints", "scene_id", "schema_version"}}
+    elif "constraint_generation" in scene:
+        result["constraint_generation"] = copy.deepcopy(scene["constraint_generation"])
     if constraint_file and constraint_file.get("scene_id", result["scene_id"]) != result["scene_id"]:
         raise ValueError("Constraint and layout scene_id differ")
+    if constraint_file and "reference_image" in constraint_file:
+        if constraint_file["reference_image"].get("sha256") != scene.get("reference_image", {}).get("sha256"):
+            raise ValueError("Constraints were generated from a different reference image")
     for source in objects:
         obj = copy.deepcopy(source)
         props = obj.get("properties", {})
@@ -76,11 +88,15 @@ def normalise(raw, constraint_file=None):
         obj.setdefault("forward_axis", [0, 0, 1])
         old_asset = obj.get("asset", {}) or {}
         unity_type = "gaussian_splat" if rep == "gaussian" else "procedural_mesh" if category in PROCEDURAL else "mesh_gameobject"
+        if scene.get("schema_version") == VERSION or scene.get("generation", {}).get("method") == "local_vision":
+            unity_type = old_asset.get("unity_type", unity_type)
+        if unity_type not in {"gaussian_splat", "procedural_mesh", "mesh_gameobject"}:
+            raise ValueError("Invalid unity_type")
         ext = "ply" if rep == "gaussian" else "glb"
         kind = "gaussian_assets" if rep == "gaussian" else "mesh_assets"
         expected = None if unity_type == "procedural_mesh" else f"outputs/{kind}/{result['scene_id']}/{obj['id']}/{obj['id']}.{ext}"
         obj["asset"] = {**old_asset, "unity_type": unity_type, "asset_path": expected,
-                        "source_path": old_asset.get("source_path") or old_asset.get("source_glb") or old_asset.get("source_ply") or old_asset.get("asset_path") or old_asset.get("path"),
+                        "source_path": old_asset["source_path"] if "source_path" in old_asset else old_asset.get("source_glb") or old_asset.get("source_ply") or old_asset.get("asset_path") or old_asset.get("path"),
                         "prefab_name": obj["id"], "renderer_name": obj["id"]}
         result["objects"].append(obj)
     unique = {}
@@ -197,6 +213,20 @@ def export_bundle(scene, out, root):
                 for o in selected]
         write(out / f"{rep}_jobs.json", {"scene_id": scene["scene_id"], "jobs": jobs})
     write(out / "validation.json", {**validate(scene), "support_order": support_order(scene), "assets_generated": False})
+    # The VLM supplies the content; these are format adapters, not category-based prompt rules.
+    mesh_assets = [o for o in scene["objects"] if o["asset"]["unity_type"] == "mesh_gameobject"]
+    with (out / "mesh_object_prompts.csv").open("w", newline="", encoding="utf-8-sig") as stream:
+        fields = ["scene_id", "object_id", "name", "category", "object_prompt", "expected_glb", "output_dir"]
+        writer = csv.DictWriter(stream, fieldnames=fields)
+        writer.writeheader()
+        for o in mesh_assets:
+            writer.writerow({"scene_id": scene["scene_id"], "object_id": o["id"], "name": o["name"],
+                             "category": o["category"], "object_prompt": o.get("asset_prompt", o["name"]),
+                             "expected_glb": o["asset"]["asset_path"], "output_dir": str(Path(o["asset"]["asset_path"]).parent)})
+    write(out / "gaussian_background_prompts.json", {"scene_id": scene["scene_id"],
+          "negative_prompt": "text, watermark, indoor foreground furniture",
+          "prompts": [{"object_id": o["id"], "background_prompt": o.get("asset_prompt", o["name"])}
+                      for o in scene["objects"] if o["representation"] == "gaussian"]})
 
 
 def check_assets(scene, root):

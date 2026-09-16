@@ -11,7 +11,7 @@ wsl -d Ubuntu-22.04
 Ubuntu内で実行します。
 
 ```bash
-cd /mnt/c/Users/81808/Documents/ChatGPT/2025_YAMAMOTO/Text2Mesh2GS_v2
+cd ~/Text2Mesh2GS-delivery/Text2Mesh2GS_v2
 source activate_wsl.sh
 python scripts/verify_runtime.py
 python pipeline.py prepare --scene examples/scene_v2.json --output outputs/room_001
@@ -20,6 +20,8 @@ python pipeline.py prepare --scene examples/scene_v2.json --output outputs/room_
 環境は`/home/dpc7/.venvs/text2mesh2gs-v2`です。`source activate_wsl.sh`は端末を開くたびに実行してください。仮想環境はWSL用なのでWindowsのPythonでは利用できません。
 
 PyTorch、Diffusers、gsplatと前処理の依存関係をまとめた環境です。TRELLIS本体の環境とUnity Editorは別です。TRELLISの外部コマンドには既存のTRELLIS専用Pythonを絶対パスで指定してください。モデル重みのダウンロードや本学習は環境作成に含めません。
+
+部屋画像の認識・制約生成は別プロセスのローカルOllamaを使用します。起動・モデル取得は[実行手順](USAGE.md)の工程1を参照してください。Python環境を有効にするだけではOllamaサーバーは起動しません。
 
 ## 構成
 

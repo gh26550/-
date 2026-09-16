@@ -16,3 +16,5 @@ trimesh==4.7.4
 tqdm==4.67.1
 ninja==1.13.0
 gsplat==1.5.3
+jsonschema==4.26.0
+zstandard==0.25.0
