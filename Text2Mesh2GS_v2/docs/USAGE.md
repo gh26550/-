@@ -2,12 +2,10 @@
 
 ## 0. 更新とPython環境
 
-Ubuntu-22.04内で実行します。このPCでクローン済みの場合：
+Ubuntu-22.04内で実行します。DPC7の更新済み作業フォルダを使う場合：
 
 ```bash
-cd ~/Text2Mesh2GS-delivery
-git pull --ff-only
-cd Text2Mesh2GS_v2
+cd ~/Text2Mesh2GS_v2
 source activate_wsl.sh
 python -m pip install -r requirements-runtime-lock.txt
 python scripts/verify_runtime.py
@@ -52,15 +50,7 @@ python scripts/23_build_scene_graph_from_text_image.py --scene_id room_001 --ima
 python scripts/23_build_scene_graph_from_text_image.py --scene_id room_001 --image_path /home/dpc7/Text2Mesh2GS/outputs/scene_images/room_001/candidate_00.png
 ```
 
-`outputs/scene_graphs/room_001/scene_graph.json`に個々の物体、bbox、見た目、生成用プロンプト、推定寸法、信頼度、根拠を保存します。椅子が2脚なら2インスタンスです。クッションや本などはソファ・棚のアセットに含め、同じ物体の重複を避けます。天井・壁に固定された照明など、現在の家具配置で扱えない物体はuncertaintiesに記録して手動対応します。画像が存在しなければ停止します。テキストから家具一覧を補完しません。
-
-画像と認識一覧を照合し、必要ならJSONを修正します。推定寸法は計測値ではありません。床・壁・天井は設定寸法の参照構造です。家具の初期座標はゼロで、配置の答え座標を生成しません。
-
-23は既定で初回認識後にもう一度画像を見直し、認識漏れ・重複・表現形式を点検します。初回とレビューの監査JSONを別々に保存します。`local_llm.vision_review: false`で省略できますが、人による画像照合は必要です。
-
-画像端の座標が寸法の2%以内だけ超過した場合は画像端で切り詰め、同じカテゴリ・表現形式・可動性・元のbboxが完全一致する別IDの検出は最初のIDに統合します。元出力は監査JSONのraw_result、補正内容はcorrectionsに保存し、uncertaintiesにも確認を促す注記を追加します。似た位置の別物体や異なるカテゴリは自動統合しません。大きな座標超過・同一ID重複・無効な矩形は引き続きエラーです。
-
-`Model output invalid after bounded repair`の場合は、続けて表示される対象ID・理由と`.vision_audit.json`または`.vision_review.json`を確認します。サーバー接続失敗とは異なり、モデル応答の検証エラーです。
+23は候補検出・全体レビュー・物体別の切り抜き確認を行います。確認待ちの解決、固定棚・窓の登録、再実行方法は[物体別レビュー版の手順](OBJECT_REVIEW.md)を参照してください。旧版の物体一覧は23から作り直します。review_status=completeの場合だけ34へ進んでください。
 
 ## 4. LLMで意味制約を生成
 
@@ -70,7 +60,7 @@ python scripts/34_generate_spatial_constraints.py --scene_graph outputs/scene_gr
 
 34も同じ画像を読みます。画像を移動した場合は`--image_path`で新しいパスを指定できますが、SHA256が一致する必要があります。
 
-根拠がある場合にon/near/face to/部屋中心/窓背景のcenter・parallel・cover・visibility等を出力します。欠落ID、未対応関係、支持循環、方向矛盾、制約のない家具などを検査し、問題はLLMへ返して修復します。上限まで失敗したら停止します。監査JSONに試行結果とエラーを保存します。
+34は物体ごとに制約を生成し、画像と再照合します。未解決はstatus=incompleteで保存し、prepareを停止します。同じ入力の成功結果は再利用します。ログと修復手順は[物体別レビュー版の手順](OBJECT_REVIEW.md)を参照してください。
 
 ## 5. Unity入力と生成ジョブへ変換
 

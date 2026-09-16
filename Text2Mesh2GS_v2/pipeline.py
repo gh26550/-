@@ -7,6 +7,7 @@ import copy
 import csv
 import json
 import math
+import hashlib
 import subprocess
 import sys
 from pathlib import Path
@@ -43,6 +44,10 @@ def vector(value, name, positive=False):
 def normalise(raw, constraint_file=None):
     """Convert legacy simple/detailed graphs and Unity layouts without inferring coordinates."""
     scene = copy.deepcopy(raw)
+    if constraint_file and constraint_file.get('scene_fingerprint'):
+        digest = hashlib.sha256(json.dumps(raw, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+        if digest != constraint_file['scene_fingerprint']:
+            raise ValueError('Scene changed after constraint generation; rerun stage 34')
     objects = scene.get("objects", scene.get("unity_objects", []))
     if not objects:
         raise ValueError("objects/unity_objects is empty")
@@ -184,6 +189,18 @@ def validate(scene):
 def export_bundle(scene, out, root):
     out, root = Path(out), Path(root).resolve()
     validate(scene)
+    generation = scene.get('generation', {})
+    if generation.get('review_pipeline') == 'per_object_v1':
+        if generation.get('review_status') != 'complete' or generation.get('unresolved'):
+            raise ValueError('Inventory has unresolved visual review items; export blocked')
+        cg = scene.get('constraint_generation', {})
+        if cg.get('status') != 'complete' or cg.get('unresolved'):
+            raise ValueError('Complete reviewed constraints are required; export blocked')
+        uncovered = [o['id'] for o in scene['objects'] if
+                     (o['properties']['movable'] or o['representation'] == 'gaussian') and
+                     not any(c['source'] == o['id'] for c in scene['constraints'])]
+        if uncovered:
+            raise ValueError('Missing constraints: ' + str(uncovered))
     unity = []
     import_jobs = []
     for obj in scene["objects"]:

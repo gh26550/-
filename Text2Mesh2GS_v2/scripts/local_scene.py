@@ -97,7 +97,7 @@ class ModelOutputError(ValueError):
 
 def ask(settings, prompt, schema, image, previous=None, error=None):
     messages = [{"role": "system", "content": SYSTEM},
-                {"role": "user", "content": prompt + "\nJSON schema:\n" + json.dumps(schema), "images": [image]}]
+                {"role": "user", "content": prompt + "\nJSON schema:\n" + json.dumps(schema), "images": image if isinstance(image, list) else [image]}]
     if previous is not None:
         messages += [{"role": "assistant", "content": json.dumps(previous)},
                      {"role": "user", "content": "Correct the entire JSON. Validation failed: " + str(error)}]
@@ -245,7 +245,7 @@ def build_scene(data, scene_id, size, reference, settings):
            "summary": data["summary"], "uncertainties": data["uncertainties"], "needs_visual_review": True}})
 
 
-def check_constraints(data, scene):
+def check_constraints(data, scene, require_coverage=True):
     bridge.validate(dict(scene, constraints=data["constraints"]))
     objects, seen = {o["id"]: o for o in scene["objects"]}, set()
     for c in data["constraints"]:
@@ -263,7 +263,7 @@ def check_constraints(data, scene):
             raise ValueError("Constraint source must be movable furniture or Gaussian")
     uncovered = [o["id"] for o in scene["objects"] if (o["properties"]["movable"] or o["representation"] == "gaussian")
                  and not any(c["source"] == o["id"] for c in data["constraints"])]
-    if uncovered:
+    if uncovered and require_coverage:
         raise ValueError("Objects with no placement relation (provide justified design intent): " + str(uncovered))
 
 
