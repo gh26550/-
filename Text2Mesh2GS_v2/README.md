@@ -2,6 +2,7 @@
 
 ## 説明書の入口
 
+- [仮想環境の起動・再作成](docs/ENVIRONMENT.md)：WSLでの専用環境。
 - [導入・実行手順](docs/USAGE.md)：GitHubから取得してUnityで実行するまで。
 - [動作原理とスコアの説明](docs/ARCHITECTURE.md)：データの流れ、配置探索、評価式、制約の意味。
 - [検証記録](docs/VALIDATION.md)：確認済みの範囲と未検証の工程。
